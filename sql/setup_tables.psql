@@ -1,0 +1,150 @@
+-- Create the yrkesco schema
+CREATE SCHEMA IF NOT EXISTS yrkesco;
+
+-- Set the search path
+SET search_path TO yrkesco;
+
+-- Create the country table
+CREATE TABLE IF NOT EXISTS country (
+    country_id SERIAL PRIMARY KEY,
+    country_name VARCHAR(100) NOT NULL
+);
+
+-- Create the city table
+CREATE TABLE IF NOT EXISTS city (
+    city_id SERIAL PRIMARY KEY,
+    city_name VARCHAR(100) NOT NULL,
+    country_id INTEGER REFERENCES country(country_id)
+);
+
+-- Create the address table
+CREATE TABLE IF NOT EXISTS address (
+    address_id SERIAL PRIMARY KEY,
+    street VARCHAR(100) NOT NULL,
+    street_number VARCHAR(20),
+    postal_code VARCHAR(20),
+    city_id INTEGER REFERENCES city(city_id)
+);
+
+-- Create the tax_status table
+CREATE TABLE IF NOT EXISTS tax_status (
+    tax_status_id SERIAL PRIMARY KEY,
+    tax_status_name VARCHAR(100) NOT NULL
+);
+
+-- Create the contract_type table
+CREATE TABLE IF NOT EXISTS contract_type (
+    contract_type_id SERIAL PRIMARY KEY,
+    contract_type_name VARCHAR(100) NOT NULL
+);
+
+-- Create the company table
+CREATE TABLE IF NOT EXISTS company (
+    company_id SERIAL PRIMARY KEY,
+    company_name VARCHAR(100) NOT NULL,
+    organization_number VARCHAR(20) UNIQUE,
+    tax_status_id INTEGER REFERENCES tax_status(tax_status_id),
+    address_id INTEGER REFERENCES address(address_id),
+    hourly_rate INTEGER
+);
+
+-- Create the person table
+CREATE TABLE IF NOT EXISTS person (
+    person_id SERIAL PRIMARY KEY,
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL
+);
+
+-- Create the personal_information table
+CREATE TABLE IF NOT EXISTS personal_information (
+    person_id INTEGER PRIMARY KEY REFERENCES person(person_id),
+    personal_number VARCHAR(20) UNIQUE NOT NULL
+);
+
+-- Create the class_manager table
+CREATE TABLE IF NOT EXISTS class_manager (
+    manager_id SERIAL PRIMARY KEY,
+    person_id INTEGER REFERENCES person(person_id),
+    contract_type_id INTEGER REFERENCES contract_type(contract_type_id),
+    company_id INTEGER REFERENCES company(company_id)
+);
+
+-- Create the instructor table
+CREATE TABLE IF NOT EXISTS instructor (
+    instructor_id SERIAL PRIMARY KEY,
+    person_id INTEGER REFERENCES person(person_id),
+    contract_type_id INTEGER REFERENCES contract_type(contract_type_id),
+    company_id INTEGER REFERENCES company(company_id)
+);
+
+-- Create the school_location table
+CREATE TABLE IF NOT EXISTS school_location (
+    location_id SERIAL PRIMARY KEY,
+    location_name VARCHAR(100) NOT NULL,
+    address_id INTEGER REFERENCES address(address_id)
+);
+
+-- Create the program table
+CREATE TABLE IF NOT EXISTS program (
+    program_id SERIAL PRIMARY KEY,
+    program_name VARCHAR(100) NOT NULL,
+    program_duration_years INTEGER,
+    total_credits INTEGER,
+    approved_iterations INTEGER,
+    description TEXT
+);
+
+-- Create the course table
+CREATE TABLE IF NOT EXISTS course (
+    course_id SERIAL PRIMARY KEY,
+    course_name VARCHAR(100) NOT NULL,
+    course_code VARCHAR(20) UNIQUE,
+    course_credits INTEGER,
+    course_description TEXT
+);
+
+-- Create the program_course table
+CREATE TABLE IF NOT EXISTS program_course (
+    program_id INTEGER REFERENCES program(program_id),
+    course_id INTEGER REFERENCES course(course_id),
+    PRIMARY KEY (program_id, course_id)
+);
+
+-- Create the course_offering table
+CREATE TABLE IF NOT EXISTS course_offering (
+    offering_id SERIAL PRIMARY KEY,
+    course_id INTEGER REFERENCES course(course_id),
+    location_id INTEGER REFERENCES school_location(location_id),
+    instructor_id INTEGER REFERENCES instructor(instructor_id)
+);
+
+-- Create the class table (moved up)
+CREATE TABLE IF NOT EXISTS class (
+    class_id SERIAL PRIMARY KEY,
+    class_name VARCHAR(20),
+    program_id INTEGER REFERENCES program(program_id),
+    iteration_number INTEGER,
+    manager_id INTEGER REFERENCES class_manager(manager_id)
+);
+
+-- Create the student table (moved down)
+CREATE TABLE IF NOT EXISTS student (
+    student_id SERIAL PRIMARY KEY,
+    person_id INTEGER REFERENCES person(person_id),
+    class_id INTEGER REFERENCES class(class_id)
+);
+
+-- Create the grade table.
+CREATE TABLE IF NOT EXISTS grade (
+    grade_id SERIAL PRIMARY KEY,
+    grade_name VARCHAR(20)
+);
+
+-- Create the enrollment table
+CREATE TABLE IF NOT EXISTS enrollment (
+    student_id INTEGER REFERENCES student(student_id),
+    offering_id INTEGER REFERENCES course_offering(offering_id),
+    grade_id INTEGER REFERENCES grade(grade_id),
+    PRIMARY KEY (student_id, offering_id)
+);
