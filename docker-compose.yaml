@@ -10,11 +10,9 @@ services:
     ports:
       - "${POSTGRES_PORT}:5432"
     volumes:
-      - yh_labb:/var/lib/postgresql/data # named_volume
+      - ./yh_data:/var/lib/postgresql/data  # bind mount instead of named volume
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
       interval: 5s
       retries: 5
       timeout: 3s
-volumes:
-  yh_labb:
