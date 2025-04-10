@@ -1,0 +1,17 @@
+-- Trigger function to check iteration limits
+CREATE OR REPLACE FUNCTION yrkesco.check_program_iterations()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Check if the iteration number exceeds the approved iterations for the program
+    IF NEW.iteration_number > (SELECT approved_iterations FROM yrkesco.Program WHERE program_id = NEW.program_id) THEN
+        RAISE EXCEPTION 'Iteration number exceeds approved iterations for the program.';
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Create the trigger to enforce iteration limits
+CREATE TRIGGER limit_program_iterations
+BEFORE INSERT OR UPDATE ON yrkesco.Class  -- Explicitly reference yrkesco.Class table
+FOR EACH ROW
+EXECUTE FUNCTION yrkesco.check_program_iterations();  -- Explicitly call the function from yrkesco schema
