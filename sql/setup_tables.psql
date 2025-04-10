@@ -71,9 +71,11 @@ CREATE TABLE IF NOT EXISTS yrkesco.Education_manager (
 
 
 -- PRIVATE_EDUCATION_MANAGER
+-- DROP TABLE IF EXISTS yrkesco.Private_Education_manager CASCADE;
+
 CREATE TABLE IF NOT EXISTS yrkesco.Private_Education_manager (
     manager_id INT PRIMARY KEY REFERENCES yrkesco.Education_manager(manager_id) ON DELETE CASCADE,
-    personal_number VARCHAR(10) UNIQUE
+    personal_number CHAR(12) UNIQUE NOT NULL CHECK (personal_number ~ '^[0-9]{12}$')
 );
 
 -- TEACHER
@@ -85,9 +87,11 @@ CREATE TABLE IF NOT EXISTS yrkesco.Teacher (
 );
 
 -- PRIVATE_TEACHER
+-- DROP TABLE IF EXISTS yrkesco.Private_Teacher CASCADE;
+
 CREATE TABLE IF NOT EXISTS yrkesco.Private_Teacher (
     teacher_id INT PRIMARY KEY REFERENCES yrkesco.Teacher(teacher_id) ON DELETE CASCADE,
-    personal_number VARCHAR(10) UNIQUE
+    personal_number VARCHAR(12) UNIQUE
 );
 
 -- PROGRAM

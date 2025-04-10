@@ -33,27 +33,34 @@ FROM '/import/Person.csv'
 DELIMITER ',' CSV HEADER;
 
 SELECT * FROM yrkesco.Person; 
-----------------------------------
+
 -- Load Education_manager
-COPY yrkesco.Education_manager(manager_id, person_id, contract_type_id, company_id)
+COPY yrkesco.Education_manager(manager_id, person_id, company_id, employment_type)
 FROM '/import/Education_manager.csv'
 DELIMITER ',' CSV HEADER;
 
 SELECT * FROM yrkesco.Education_manager; 
 
 -- Load Private_Education_manager
-COPY yrkesco.Private_Education_manager(person_id, personal_number)
+COPY yrkesco.Private_Education_manager(manager_id, personal_number)
 FROM '/import/Private_Education_manager.csv'
 DELIMITER ',' CSV HEADER;
 
 SELECT * FROM yrkesco.Private_Education_manager;
 
--- Load instructor
-COPY yrkesco.instructor(instructor_id, person_id, contract_type_id, company_id)
-FROM '/import/instructor.csv'
+-- Load Teacher
+COPY yrkesco.Teacher(teacher_id, person_id, company_id, employment_type)
+FROM '/import/Teacher.csv'
 DELIMITER ',' CSV HEADER;
 
-SELECT * FROM yrkesco.instructor; 
+SELECT * FROM yrkesco.Teacher; 
+
+-- Load Private_Teacher
+COPY yrkesco.Private_Teacher(teacher_id, personal_number)
+FROM '/import/Private_Teacher.csv'
+DELIMITER ',' CSV HEADER;
+
+SELECT * FROM yrkesco.Private_Teacher;
 
 -- Load program
 COPY yrkesco.program(program_id, program_name, program_duration_years, total_credits, approved_iterations)
