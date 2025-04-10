@@ -1,0 +1,50 @@
+course_id,course_name,course_code,course_credits,course_description
+1,Programmering,PRG_DE,40,Introduktion till grundläggande programmeringskoncept.
+2,Projektmetodik och affärsmannaskap,PM_DE,15,Grundläggande projektmetodik och affärsmannaskap.
+3,SQL,SQL_DE,30,Grundläggande databashantering med SQL.
+4,Programmering inom data platform development,DP_DE,40,Programmering för data plattformsutveckling.
+5,Datamodellering,DM_DE,30,Metoder för att designa och skapa datamodeller.
+6,Datavisualisering,DV_DE,40,Tekniker för att presentera data visuellt.
+7,Data warehouse lifecycle ,DW_DE,25,Livscykelhantering av data warehouse.
+8,Big Data and Cloud,BDC_DE,30,Introduktion till storskalig datahantering och molntjänster.
+9,Automation and devops,AUT_DE,10,Automation och DevOps-metoder för systemutveckling.
+10,Maskininlärning,ML_DE,20,Grundläggande koncept och algoritmer inom maskininlärning.
+11,Examensarbete,EX_DE,20,Självständigt forskningsprojekt.
+12,LIA,LIA_DE,100,Praktikperiod i arbetslivet.
+13,Introkurs,INT_BIM,10,Introduktionskurs till utbildningen.
+14,Modellbaserad projektering,MP_BIM,20,Modellbaserad projektering i anläggningsprojekt.
+15,Anläggningsprocessen,ANP_BIM,20,Översikt över anläggningsprocessen.
+16,Digitala verktyg och processer,DVP_BIM,20,Användning av digitala verktyg i anläggningsprojekt.
+17,Anläggningsteknik,ANT_BIM,20,Grundläggande principer inom anläggningsteknik.
+18,Konstruktionsteknik,KT_BIM,30,Tekniker för konstruktion i anläggningsprojekt.
+19,Digitala processer och BIM-metodik,DP_BIM,25,Digitala processer och BIM-metodik i byggprojekt.
+20,Mark- och anläggningsteknik,MANT_BIM,40,Tekniker för mark- och anläggningsarbeten.
+21,Projektekonomi och projektsamordning,PE_BIM,25,Ekonomisk planering och samordning av projekt.
+22,Digital samordning och fördjupning BIM,DS_BIM,40,Avancerad digital samordning och BIM-tillämpning.
+23,Hållbart byggande,HB_BIM,40,Principer för hållbart byggande.
+24,LIA ,LIA_BIM,105,Självständigt forskningsprojekt.
+25,Examensarbete ,EX_BIM,25,Praktikperiod i arbetslivet.
+26,Introkurs ,INT_UX,10,Introduktionskurs till utbildningen.
+27,Interaktionsdesign ,ID_UX,50,Design av interaktiva system och gränssnitt.
+28,Frontend ,FE_UX,20,Utveckling av användargränssnitt för webbapplikationer.
+29,UX research,RES_UX,70,Metoder för att undersöka användarbehov och beteenden.
+30,Visuell Design,VD_UX,30,Design av visuella element för digitala produkter.
+31,Agil metodik och arbetssätt,AM_UX,30,Agila metoder och arbetssätt i utvecklingsprojekt.
+32,Kommunikation & facilitering ,KF_UX,25,Kommunikations- och faciliteringsfärdigheter.
+33,Tjänstedesign -fortsättning,TJ_UX,30,Fortsättningskurs i tjänstedesign.
+34,UX-writing,WR_UX,25,Skrivande för användarupplevelse.
+35,LIA ,LIA_UX,100,Praktikperiod i arbetslivet.
+36,Examensarbete ,EX_UX,20,Självständigt forskningsprojekt.
+37,Matematik,MAT,30,Grundläggande matematiska koncept.
+38,Sommarkurs Matematik,MAT_SOM,30,Intensivkurs i matematik under sommaren.
+39,Introduktion ,INT_PEL,5,Översikt av yrkesrollen och branschens krav.
+40,Projektekonomi och upphandling,PE_PEL,21,"Budgetering, kalkylering och ekonomisk planering vid elinstallationsprojekt."
+41,Anläggningar för produktion och överföring av el,ANL_PEL,40,"Kunskap om elproduktion, överföringsnät och distribution."
+42,Elinstallationer i byggnader,EL_PEL,40,Fördjupning inom installationer i olika typer av byggnader.
+43,Entreprenadjuridik ,JUR_PEL,15,Grundläggande juridik kring entreprenadavtal.
+44,Arbetsledning ,ARB_PEL,15,"Utvecklar förmåga att leda team, hantera konflikter och kommunicera effektivt. "
+45,Projektledning och projektmetodik,PM_PEL,15,"Metoder för att planera, genomföra och följa upp elinstallationsprojekt."
+46,Regler och standarder,REG_PEL,12,Elsäkerhetsverkets föreskrifter och nationella standarder för elinstallation.
+47,Elmaskiner – drivsystem ,DRIV_PEL,12,"Elmaskiners uppbyggnad, styrning och underhåll för effektiv drift och energioptimering."
+48,Examensarbete ,EXAM_PEL,15,Självständigt projekt som fördjupar och tillämpar kunskaper inom elinstallation och projektledning.
+49,LIA ,LIA_PEL,50,"Praktisk arbetslivserfarenhet inom elinstallation, projektledning och entreprenadstyrning."

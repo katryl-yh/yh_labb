@@ -1,0 +1,14 @@
+teacher_id,person_id,company_id,employment_type
+1,4,2,consultant
+2,5,1,temporary
+3,6,3,consultant
+4,7,1,permanent: part-time
+5,8,4,consultant
+6,9,4,consultant
+7,10,5,consultant
+8,11,1,permanent: part-time
+9,12,6,consultant
+10,13,6,consultant
+11,14,7,consultant
+12,15,8,consultant
+13,16,8,consultant

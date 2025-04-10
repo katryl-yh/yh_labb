@@ -1,0 +1,9 @@
+company_id,company_name,organization_number,is_F_tax,address_id,hourly_rate
+1,YrkesCo,1234566660,True,1,0
+2,Programming Consulting,1234567890,True,3,1000
+3,Data Solutions,9876543210,True,4,800
+4,BIM Specialister,5432109876,True,5,1300
+5,BIM Systems,6789012345,True,6,1100
+6,UX Group,2345678901,True,7,900
+7,UE Services,7890123456,True,8,1200
+8,El specialister,9807654321,True,9,1000

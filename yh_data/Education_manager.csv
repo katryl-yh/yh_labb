@@ -1,0 +1,4 @@
+manager_id,person_id,company_id,employment_type
+1,1,1,permanent: full-time
+2,2,1,permanent: full-time
+3,3,1,permanent: part-time

@@ -1,0 +1,8 @@
+class_id,class_name,program_id,iteration_number ,manager_id,campus_id,status
+1,DE23,1,1,1,1,ongoing
+2,BIM23,2,1,1,1,ongoing
+3,DE24,1,2,1,1,ongoing
+4,BIM24,2,2,2,2,ongoing
+5,UX24,3,1,2,2,ongoing
+6,PEL25,4,1,3,3,to open
+7,BIM25,2,3,1,2,to open

@@ -1,0 +1,44 @@
+Unnamed: 0,Unnamed: 1,teacher_id,Unnamed: 3,Unnamed: 4,Unnamed: 5,Unnamed: 6
+1,PRG_DE,1,teacher_id,spec,company_id,employment_type
+2,PM_DE,2,1,programming and sql,2,consultant
+3,SQL_DE,1,2,project metodik,1,part time
+4,DP_DE,3,3,data bases,3,consultant
+5,DM_DE,1,4,LIA DE,1,part time
+6,DV_DE,1,5,bim,4,consultant
+7,DW_DE,3,6,bim,4,consultant
+8,BDC_DE,3,7,bim,5,consultant
+9,AUT_DE,3,8,LIA BIM,1,part time
+10,ML_DE,1,9,ux,6,consultant
+11,EX_DE,3,10,ux,6,consultant
+12,LIA_DE,4,11,"ue, LIA",7,consultant
+13,INT_BIM,5,12,EL,8,consultant
+14,MP_BIM,5,13,EL,8,consultant
+15,ANP_BIM,5,,,,
+16,DVP_BIM,6,1,YrkesCo,,
+17,ANT_BIM,6,2,Programming Consulting,,
+18,KT_BIM,6,3,Data Solutions,,
+19,DP_BIM,7,4,BIM Specialister,,
+20,MANT_BIM,7,5,BIM Systems,,
+21,PE_BIM,7,6,UX Group,,
+22,DS_BIM,5,7,UE Services,,
+23,HB_BIM,5,8,El specialister,,
+24,LIA_BIM,8,,,,
+25,EX_BIM,5,,,,
+26,INT_UX,9,,,,
+27,ID_UX,9,,,,
+28,FE_UX,10,,,,
+29,RES_UX,10,,,,
+30,VD_UX,11,,,,
+31,AM_UX,11,,,,
+32,KF_UX,10,,,,
+33,TJ_UX,10,,,,
+34,WR_UX,10,,,,
+35,LIA_UX,11,,,,
+36,EX_UX,11,,,,
+37,MAT,1,,,,
+38,MAT_SOM,4,,,,
+39,INT_PEL,12,,,,
+40,PE_PEL,12,,,,
+41,ANL_PEL,12,,,,
+42,EL_PEL,13,,,,
+43,JUR_PEL,12,,,,
