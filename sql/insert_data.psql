@@ -1,0 +1,112 @@
+-- Load City
+COPY yrkesco.City(city_id, city_name, country_name)
+FROM '/import/City.csv'
+DELIMITER ',' CSV HEADER;
+
+SELECT * FROM yrkesco.City; 
+
+-- Load Address
+COPY yrkesco.Address(address_id, street, building_number, postal_code, city_id)
+FROM '/import/Address.csv'
+DELIMITER ',' CSV HEADER;
+
+-- DROP TABLE IF EXISTS yrkesco.Address CASCADE;
+SELECT * FROM yrkesco.address; 
+
+-- Load Company
+COPY yrkesco.Company(company_id, company_name, organization_number, is_F_tax, address_id, hourly_rate)
+FROM '/import/Company.csv'
+DELIMITER ',' CSV HEADER;
+
+SELECT * FROM yrkesco.Company; 
+
+-- Load Campus
+COPY yrkesco.Campus(campus_id, campus_name, address_id)
+FROM '/import/Campus.csv'
+DELIMITER ',' CSV HEADER;
+
+SELECT * FROM yrkesco.Campus;
+
+-- Load Person
+COPY yrkesco.Person(person_id, first_name, last_name, school_email)
+FROM '/import/Person.csv'
+DELIMITER ',' CSV HEADER;
+
+SELECT * FROM yrkesco.Person; 
+----------------------------------
+-- Load Education_manager
+COPY yrkesco.Education_manager(manager_id, person_id, contract_type_id, company_id)
+FROM '/import/Education_manager.csv'
+DELIMITER ',' CSV HEADER;
+
+SELECT * FROM yrkesco.Education_manager; 
+
+-- Load Private_Education_manager
+COPY yrkesco.Private_Education_manager(person_id, personal_number)
+FROM '/import/Private_Education_manager.csv'
+DELIMITER ',' CSV HEADER;
+
+SELECT * FROM yrkesco.Private_Education_manager;
+
+-- Load instructor
+COPY yrkesco.instructor(instructor_id, person_id, contract_type_id, company_id)
+FROM '/import/instructor.csv'
+DELIMITER ',' CSV HEADER;
+
+SELECT * FROM yrkesco.instructor; 
+
+-- Load program
+COPY yrkesco.program(program_id, program_name, program_duration_years, total_credits, approved_iterations)
+FROM '/import/program.csv'
+DELIMITER ',' CSV HEADER;
+
+SELECT * FROM yrkesco.program;
+
+-- Load course
+COPY yrkesco.course(course_id, course_name, course_code, course_credits, course_description)
+FROM '/import/course.csv'
+DELIMITER ',' CSV HEADER;
+
+SELECT * FROM yrkesco.course;
+
+-- Load program_course
+COPY yrkesco.program_course(program_id, course_id)
+FROM '/import/program_course.csv'
+DELIMITER ',' CSV HEADER;
+
+SELECT * FROM yrkesco.program_course;
+
+-- Load course_offering
+COPY yrkesco.course_offering(offering_id, course_id, location_id, instructor_id, term, year)
+FROM '/import/course_offering.csv'
+DELIMITER ',' CSV HEADER;
+
+SELECT * FROM yrkesco.course_offering;
+
+-- Load class
+COPY yrkesco.class(class_id, class_name, program_id, iteration_number, manager_id)
+FROM '/import/class.csv'
+DELIMITER ',' CSV HEADER;
+
+SELECT * FROM yrkesco.class;
+
+-- Load student
+COPY yrkesco.student(student_id, person_id, class_id)
+FROM '/import/student.csv'
+DELIMITER ',' CSV HEADER;
+
+SELECT * FROM yrkesco.student;
+
+-- Load grade
+COPY yrkesco.grade(grade_id, grade_name)
+FROM '/import/grade.csv'
+DELIMITER ',' CSV HEADER;
+
+SELECT * FROM yrkesco.grade;
+
+-- Load enrollment
+COPY yrkesco.enrollment(student_id, offering_id, grade_id)
+FROM '/import/enrollment.csv'
+DELIMITER ',' CSV HEADER;
+
+SELECT * FROM yrkesco.enrollment;

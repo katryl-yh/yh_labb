@@ -11,6 +11,7 @@ CREATE TYPE yrkesco.grade_enum AS ENUM ('NOT SET', 'IG', 'G', 'VG');
 SELECT typname
 FROM pg_type
 WHERE typnamespace = (SELECT oid FROM pg_namespace WHERE nspname = 'yrkesco');
+
 -- CITY
 CREATE TABLE IF NOT EXISTS yrkesco.City (
     city_id SERIAL PRIMARY KEY,
@@ -28,16 +29,17 @@ CREATE TABLE IF NOT EXISTS yrkesco.Address (
 );
 
 -- COMPANY
+-- DROP TABLE IF EXISTS yrkesco.Company CASCADE;
+
 CREATE TABLE IF NOT EXISTS yrkesco.Company (
     company_id SERIAL PRIMARY KEY,
     company_name VARCHAR(50) NOT NULL,
     organization_number VARCHAR(10) NOT NULL,
     is_F_tax BOOLEAN,
     address_id INT REFERENCES yrkesco.Address(address_id) ON DELETE SET NULL,
-    hourly_rate NUMERIC,
-    CHECK (
-        (company_id = 1 AND hourly_rate IS NULL)
-        OR (company_id != 1 AND hourly_rate IS NOT NULL)
+    hourly_rate NUMERIC DEFAULT 0 CHECK (
+        (company_id = 1 AND hourly_rate = 0)
+        OR (company_id != 1 AND hourly_rate > 0)
     )
 );
 
