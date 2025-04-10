@@ -1,5 +1,5 @@
-offering_id,course_id,term,year,student_limit,campus_id,teacher_id,class_id
-1,37,HT,2023,20,1,1,0
+offering_id,course_id,term,year,student_limit,campus_id,teacher_id,linked_class_id
+1,37,HT,2023,20,1,1,
 2,1,HT,2023,10,1,1,1
 3,2,HT,2023,10,1,2,1
 4,3,HT,2023,10,1,1,1
@@ -15,7 +15,7 @@ offering_id,course_id,term,year,student_limit,campus_id,teacher_id,class_id
 14,19,VT,2024,10,1,7,2
 15,20,VT,2024,10,1,7,2
 16,21,VT,2024,10,1,7,2
-17,38,ST,2024,20,3,4,0
+17,38,ST,2024,20,3,4,
 18,7,HT,2024,10,1,3,1
 19,8,HT,2024,10,1,3,1
 20,9,HT,2024,10,1,3,1

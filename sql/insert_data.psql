@@ -62,58 +62,58 @@ DELIMITER ',' CSV HEADER;
 
 SELECT * FROM yrkesco.Private_Teacher;
 
--- Load program
-COPY yrkesco.program(program_id, program_name, program_duration_years, total_credits, approved_iterations)
-FROM '/import/program.csv'
+-- Load Program
+COPY yrkesco.Program(program_id, program_name, program_duration_years, total_credits, approved_iterations)
+FROM '/import/Program.csv'
 DELIMITER ',' CSV HEADER;
 
-SELECT * FROM yrkesco.program;
+SELECT * FROM yrkesco.Program;
 
--- Load course
-COPY yrkesco.course(course_id, course_name, course_code, course_credits, course_description)
-FROM '/import/course.csv'
+-- Load Class
+COPY yrkesco.Class(class_id, class_name, program_id, iteration_number, manager_id, campus_id, status)
+FROM '/import/Class.csv'
 DELIMITER ',' CSV HEADER;
 
-SELECT * FROM yrkesco.course;
+SELECT * FROM yrkesco.Class;
 
--- Load program_course
-COPY yrkesco.program_course(program_id, course_id)
-FROM '/import/program_course.csv'
+-- Load Student
+COPY yrkesco.Student(student_id, person_id, class_id)
+FROM '/import/Student.csv'
 DELIMITER ',' CSV HEADER;
 
-SELECT * FROM yrkesco.program_course;
+SELECT * FROM yrkesco.Student;
 
--- Load course_offering
-COPY yrkesco.course_offering(offering_id, course_id, location_id, instructor_id, term, year)
-FROM '/import/course_offering.csv'
+-- Load Private_Student
+COPY yrkesco.Private_Student(student_id, personal_number)
+FROM '/import/Private_Student.csv'
 DELIMITER ',' CSV HEADER;
 
-SELECT * FROM yrkesco.course_offering;
+SELECT * FROM yrkesco.Private_Student;
 
--- Load class
-COPY yrkesco.class(class_id, class_name, program_id, iteration_number, manager_id)
-FROM '/import/class.csv'
+-- Load Course
+COPY yrkesco.Course(course_id, course_name, course_code, course_credits, course_description)
+FROM '/import/Course.csv'
 DELIMITER ',' CSV HEADER;
 
-SELECT * FROM yrkesco.class;
+SELECT * FROM yrkesco.Course;
 
--- Load student
-COPY yrkesco.student(student_id, person_id, class_id)
-FROM '/import/student.csv'
+-- Load ProgramCourse
+COPY yrkesco.ProgramCourse(program_id, course_id)
+FROM '/import/ProgramCourse.csv'
 DELIMITER ',' CSV HEADER;
 
-SELECT * FROM yrkesco.student;
+SELECT * FROM yrkesco.ProgramCourse;
 
--- Load grade
-COPY yrkesco.grade(grade_id, grade_name)
-FROM '/import/grade.csv'
+-- Load Course_offering
+COPY yrkesco.Course_offering(offering_id, course_id, term, year, student_limit, campus_id, teacher_id, linked_class_id)
+FROM '/import/Course_offering.csv'
 DELIMITER ',' CSV HEADER;
 
-SELECT * FROM yrkesco.grade;
+SELECT * FROM yrkesco.Course_offering;
 
--- Load enrollment
-COPY yrkesco.enrollment(student_id, offering_id, grade_id)
-FROM '/import/enrollment.csv'
+-- Load Enrollment
+COPY yrkesco.Enrollment(student_id, offering_id, grade, grade_update)
+FROM '/import/Enrollment.csv'
 DELIMITER ',' CSV HEADER;
 
-SELECT * FROM yrkesco.enrollment;
+SELECT * FROM yrkesco.Enrollment;

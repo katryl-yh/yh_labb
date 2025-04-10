@@ -1,17 +1,26 @@
 -- Trigger function to enforce max 3 classes per manager
+-- NOTE: only count classes with status 'ongoing'
 CREATE OR REPLACE FUNCTION yrkesco.check_class_limit()
 RETURNS TRIGGER AS $$
 BEGIN
-    -- Check if the manager is already managing 3 classes
-    IF (SELECT COUNT(*) FROM yrkesco.Class WHERE manager_id = NEW.manager_id) >= 3 THEN
-        RAISE EXCEPTION 'Manager can only manage up to 3 classes';
+    -- Only check if the new class is 'ongoing'
+    IF NEW.status = 'ongoing' THEN
+        IF (
+            SELECT COUNT(*)
+            FROM yrkesco.Class
+            WHERE manager_id = NEW.manager_id
+              AND status = 'ongoing'
+        ) >= 3 THEN
+            RAISE EXCEPTION 'Manager can only manage up to 3 ongoing classes';
+        END IF;
     END IF;
+
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
 -- Create the trigger for enforcing the class limit per manager
-CREATE TRIGGER trg_class_limit
+CREATE OR REPLACE TRIGGER trg_class_limit
 BEFORE INSERT OR UPDATE ON yrkesco.Class  -- Reference to yrkesco schema explicitly
 FOR EACH ROW
 WHEN (NEW.manager_id IS NOT NULL)

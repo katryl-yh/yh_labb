@@ -69,7 +69,6 @@ CREATE TABLE IF NOT EXISTS yrkesco.Education_manager (
     )
 );
 
-
 -- PRIVATE_EDUCATION_MANAGER
 -- DROP TABLE IF EXISTS yrkesco.Private_Education_manager CASCADE;
 
@@ -87,11 +86,11 @@ CREATE TABLE IF NOT EXISTS yrkesco.Teacher (
 );
 
 -- PRIVATE_TEACHER
--- DROP TABLE IF EXISTS yrkesco.Private_Teacher CASCADE;
+--DROP TABLE IF EXISTS yrkesco.Private_Teacher CASCADE;
 
 CREATE TABLE IF NOT EXISTS yrkesco.Private_Teacher (
     teacher_id INT PRIMARY KEY REFERENCES yrkesco.Teacher(teacher_id) ON DELETE CASCADE,
-    personal_number VARCHAR(12) UNIQUE
+    personal_number CHAR(12) UNIQUE NOT NULL CHECK (personal_number ~ '^[0-9]{12}$')
 );
 
 -- PROGRAM
@@ -122,9 +121,11 @@ CREATE TABLE IF NOT EXISTS yrkesco.Student (
 );
 
 -- PRIVATE_STUDENT
+--DROP TABLE IF EXISTS yrkesco.Private_Student CASCADE;
+
 CREATE TABLE IF NOT EXISTS yrkesco.Private_Student (
     student_id INT PRIMARY KEY REFERENCES yrkesco.Student(student_id) ON DELETE CASCADE,
-    personal_number VARCHAR(10) UNIQUE
+    personal_number CHAR(12) UNIQUE NOT NULL CHECK (personal_number ~ '^[0-9]{12}$')
 );
 
 -- COURSE
@@ -136,7 +137,18 @@ CREATE TABLE IF NOT EXISTS yrkesco.Course (
     course_description TEXT
 );
 
+-- PROGRAM_COURSE
+--DROP TABLE IF EXISTS yrkesco.ProgramCourse CASCADE; 
+
+CREATE TABLE IF NOT EXISTS yrkesco.ProgramCourse (
+    program_id INT REFERENCES yrkesco.Program(program_id) ON DELETE CASCADE,
+    course_id INT REFERENCES yrkesco.Course(course_id) ON DELETE CASCADE,
+    PRIMARY KEY (program_id, course_id)
+);
+
 -- COURSE_OFFERING
+--DROP TABLE IF EXISTS yrkesco.Course_offering CASCADE; 
+
 CREATE TABLE IF NOT EXISTS yrkesco.Course_offering (
     offering_id SERIAL PRIMARY KEY,
     course_id INT REFERENCES yrkesco.Course(course_id) ON DELETE CASCADE,
@@ -144,24 +156,19 @@ CREATE TABLE IF NOT EXISTS yrkesco.Course_offering (
     year INT CHECK (year >= 2000 AND year <= 2100),
     student_limit INT,
     campus_id INT REFERENCES yrkesco.Campus(campus_id) ON DELETE SET NULL,
-    linked_class_id INT REFERENCES yrkesco.Class(class_id) ON DELETE SET NULL,
-    teacher_id INT REFERENCES yrkesco.Teacher(teacher_id) ON DELETE SET NULL
-);
-
--- PROGRAM_COURSE
-CREATE TABLE IF NOT EXISTS yrkesco.program_course (
-    program_id INT REFERENCES yrkesco.Program(program_id) ON DELETE CASCADE,
-    course_id INT REFERENCES yrkesco.Course(course_id) ON DELETE CASCADE,
-    PRIMARY KEY (program_id, course_id)
+    teacher_id INT REFERENCES yrkesco.Teacher(teacher_id) ON DELETE SET NULL,
+    linked_class_id INT REFERENCES yrkesco.Class(class_id) ON DELETE SET NULL
 );
 
 -- ENROLLMENT
+--DROP TABLE IF EXISTS yrkesco.Enrollment CASCADE; 
+
 CREATE TABLE IF NOT EXISTS yrkesco.Enrollment (
     student_id INT REFERENCES yrkesco.Student(student_id) ON DELETE CASCADE,
-    course_offering_id INT REFERENCES yrkesco.Course_offering(offering_id) ON DELETE CASCADE,
+    offering_id INT REFERENCES yrkesco.Course_offering(offering_id) ON DELETE CASCADE,
     grade yrkesco.grade_enum NOT NULL DEFAULT 'NOT SET',
     grade_update TIMESTAMP NULL,
-    PRIMARY KEY (student_id, course_offering_id),
+    PRIMARY KEY (student_id, offering_id),
     CHECK (
         (grade = 'NOT SET' AND grade_update IS NULL)
         OR (grade != 'NOT SET' AND grade_update IS NOT NULL)
