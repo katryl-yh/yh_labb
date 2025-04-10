@@ -56,7 +56,14 @@ with open(parent_folder / 'Course_offering.csv', mode='r', newline='', encoding=
 enrollments = []
 
 for offering in course_offerings:
-    offering_id, course_id, term, year, limit, campus_id, teacher_id, class_id = offering
+    offering_id = offering['offering_id']
+    course_id = offering['course_id']
+    term = offering['term']
+    year = offering['year']
+    limit = offering['student_limit']
+    campus_id = offering['campus_id']
+    teacher_id = offering['teacher_id']
+    class_id = offering['class_id']
 
     # Skip offerings that shouldn't have enrollments yet
     if offering_id in no_enrollment_ids:
@@ -87,7 +94,12 @@ with open(parent_folder / 'Enrollment.csv', mode='w', newline='', encoding='utf-
     writer = csv.DictWriter(file, fieldnames=fieldnames, delimiter=',')
 
     writer.writeheader()
-    for enrollment in enrollments:
-        writer.writerow(enrollment)
+    for student_id, offering_id, grade, grade_update in enrollments:
+        writer.writerow({
+            'student_id': student_id,
+            'offering_id': offering_id,
+            'grade': grade,
+            'grade_update': grade_update
+        })
 
 print("Enrollment.csv generated successfully.")
