@@ -10,9 +10,17 @@ services:
     ports:
       - "${POSTGRES_PORT}:5432"
     volumes:
-      - ./yh_data:/var/lib/postgresql/data  # bind mount instead of named volume
+      # 1. Named volume for internal PostgreSQL data (safe & clean)
+      - pgdata:/var/lib/postgresql/data
+
+      # 2. Bind mount your CSV import folder into /import inside the container
+      - ./yh_data:/import
+
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
       interval: 5s
       retries: 5
       timeout: 3s
+
+volumes:
+  pgdata:
