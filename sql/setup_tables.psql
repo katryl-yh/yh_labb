@@ -1,0 +1,163 @@
+-- Create the schema
+CREATE SCHEMA IF NOT EXISTS yrkesco;
+
+-- Create ENUM types in the yrkesco schema
+CREATE TYPE yrkesco.employment_type_enum AS ENUM ('permanent: full-time', 'permanent: part-time', 'temporary', 'consultant');
+CREATE TYPE yrkesco.class_status_enum AS ENUM ('to open', 'ongoing', 'graduated', 'cancelled');
+CREATE TYPE yrkesco.term_enum AS ENUM ('VT', 'HT', 'ST');
+CREATE TYPE yrkesco.grade_enum AS ENUM ('NOT SET', 'IG', 'G', 'VG');
+
+-- Check if ENUM types are in the yrkesco schema:
+SELECT typname
+FROM pg_type
+WHERE typnamespace = (SELECT oid FROM pg_namespace WHERE nspname = 'yrkesco');
+-- CITY
+CREATE TABLE IF NOT EXISTS yrkesco.City (
+    city_id SERIAL PRIMARY KEY,
+    city_name VARCHAR(20) NOT NULL,
+    country_name VARCHAR(20) NOT NULL
+);
+
+-- ADDRESS
+CREATE TABLE IF NOT EXISTS yrkesco.Address (
+    address_id SERIAL PRIMARY KEY,
+    street VARCHAR(50),
+    building_number VARCHAR(20),
+    postal_code VARCHAR(5),
+    city_id INT REFERENCES yrkesco.City(city_id) ON DELETE CASCADE
+);
+
+-- COMPANY
+CREATE TABLE IF NOT EXISTS yrkesco.Company (
+    company_id SERIAL PRIMARY KEY,
+    company_name VARCHAR(50) NOT NULL,
+    organization_number VARCHAR(10) NOT NULL,
+    is_F_tax BOOLEAN,
+    address_id INT REFERENCES yrkesco.Address(address_id) ON DELETE SET NULL,
+    hourly_rate NUMERIC,
+    CHECK (
+        (company_id = 1 AND hourly_rate IS NULL)
+        OR (company_id != 1 AND hourly_rate IS NOT NULL)
+    )
+);
+
+-- CAMPUS
+CREATE TABLE IF NOT EXISTS yrkesco.Campus (
+    campus_id SERIAL PRIMARY KEY,
+    campus_name VARCHAR(100),
+    address_id INT REFERENCES yrkesco.Address(address_id) ON DELETE SET NULL
+);
+
+-- PERSON
+CREATE TABLE IF NOT EXISTS yrkesco.Person (
+    person_id SERIAL PRIMARY KEY,
+    first_name VARCHAR(50),
+    last_name VARCHAR(50),
+    school_email VARCHAR(255) UNIQUE
+    -- personal_email VARCHAR(255) UNIQUE
+);
+
+-- EDUCATION_MANAGER
+CREATE TABLE IF NOT EXISTS yrkesco.Education_manager (
+    manager_id SERIAL PRIMARY KEY,
+    person_id INT UNIQUE REFERENCES yrkesco.Person(person_id) ON DELETE CASCADE,
+    company_id INT NOT NULL REFERENCES yrkesco.Company(company_id) ON DELETE SET NULL,
+    employment_type yrkesco.employment_type_enum NOT NULL CHECK (
+        employment_type IN ('permanent: full-time', 'permanent: part-time', 'temporary')
+    )
+);
+
+
+-- PRIVATE_EDUCATION_MANAGER
+CREATE TABLE IF NOT EXISTS yrkesco.Private_Education_manager (
+    manager_id INT PRIMARY KEY REFERENCES yrkesco.Education_manager(manager_id) ON DELETE CASCADE,
+    personal_number VARCHAR(10) UNIQUE
+);
+
+-- TEACHER
+CREATE TABLE IF NOT EXISTS yrkesco.Teacher (
+    teacher_id SERIAL PRIMARY KEY,
+    person_id INT UNIQUE REFERENCES yrkesco.Person(person_id) ON DELETE CASCADE,
+    company_id INT NOT NULL REFERENCES yrkesco.Company(company_id) ON DELETE SET NULL,
+    employment_type yrkesco.employment_type_enum NOT NULL
+);
+
+-- PRIVATE_TEACHER
+CREATE TABLE IF NOT EXISTS yrkesco.Private_Teacher (
+    teacher_id INT PRIMARY KEY REFERENCES yrkesco.Teacher(teacher_id) ON DELETE CASCADE,
+    personal_number VARCHAR(10) UNIQUE
+);
+
+-- PROGRAM
+CREATE TABLE IF NOT EXISTS yrkesco.Program (
+    program_id SERIAL PRIMARY KEY,
+    program_name VARCHAR(255),
+    program_duration_years INT,
+    total_credits INT,
+    approved_iterations INT
+);
+
+-- CLASS
+CREATE TABLE IF NOT EXISTS yrkesco.Class (
+    class_id SERIAL PRIMARY KEY,
+    class_name VARCHAR(20),
+    program_id INT REFERENCES yrkesco.Program(program_id) ON DELETE CASCADE,
+    iteration_number INT,
+    manager_id INT REFERENCES yrkesco.Education_manager(manager_id) ON DELETE SET NULL,
+    campus_id INT REFERENCES yrkesco.Campus(campus_id) ON DELETE SET NULL,
+    status yrkesco.class_status_enum NOT NULL
+);
+
+-- STUDENT
+CREATE TABLE IF NOT EXISTS yrkesco.Student (
+    student_id SERIAL PRIMARY KEY,
+    person_id INT UNIQUE REFERENCES yrkesco.Person(person_id) ON DELETE CASCADE,
+    class_id INT NOT NULL REFERENCES yrkesco.Class(class_id) ON DELETE CASCADE
+);
+
+-- PRIVATE_STUDENT
+CREATE TABLE IF NOT EXISTS yrkesco.Private_Student (
+    student_id INT PRIMARY KEY REFERENCES yrkesco.Student(student_id) ON DELETE CASCADE,
+    personal_number VARCHAR(10) UNIQUE
+);
+
+-- COURSE
+CREATE TABLE IF NOT EXISTS yrkesco.Course (
+    course_id SERIAL PRIMARY KEY,
+    course_name VARCHAR(100),
+    course_code VARCHAR(50) UNIQUE NOT NULL,
+    course_credits INT,
+    course_description TEXT
+);
+
+-- COURSE_OFFERING
+CREATE TABLE IF NOT EXISTS yrkesco.Course_offering (
+    offering_id SERIAL PRIMARY KEY,
+    course_id INT REFERENCES yrkesco.Course(course_id) ON DELETE CASCADE,
+    term yrkesco.term_enum NOT NULL,
+    year INT CHECK (year >= 2000 AND year <= 2100),
+    student_limit INT,
+    campus_id INT REFERENCES yrkesco.Campus(campus_id) ON DELETE SET NULL,
+    linked_class_id INT REFERENCES yrkesco.Class(class_id) ON DELETE SET NULL,
+    teacher_id INT REFERENCES yrkesco.Teacher(teacher_id) ON DELETE SET NULL
+);
+
+-- PROGRAM_COURSE
+CREATE TABLE IF NOT EXISTS yrkesco.program_course (
+    program_id INT REFERENCES yrkesco.Program(program_id) ON DELETE CASCADE,
+    course_id INT REFERENCES yrkesco.Course(course_id) ON DELETE CASCADE,
+    PRIMARY KEY (program_id, course_id)
+);
+
+-- ENROLLMENT
+CREATE TABLE IF NOT EXISTS yrkesco.Enrollment (
+    student_id INT REFERENCES yrkesco.Student(student_id) ON DELETE CASCADE,
+    course_offering_id INT REFERENCES yrkesco.Course_offering(offering_id) ON DELETE CASCADE,
+    grade yrkesco.grade_enum NOT NULL DEFAULT 'NOT SET',
+    grade_update TIMESTAMP NULL,
+    PRIMARY KEY (student_id, course_offering_id),
+    CHECK (
+        (grade = 'NOT SET' AND grade_update IS NULL)
+        OR (grade != 'NOT SET' AND grade_update IS NOT NULL)
+    )
+);

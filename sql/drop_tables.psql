@@ -1,0 +1,28 @@
+DROP TABLE IF EXISTS 
+    enrollment,
+    course_offering,
+    program_course,
+    private_student,
+    private_teacher,
+    private_education_manager,
+    student,
+    teacher,
+    education_manager,
+    class,
+    program,
+    course,
+    company,
+    campus,
+    address,
+    city,
+    person
+CASCADE;
+
+
+-- Drop ENUM types from the public schema
+DROP TYPE IF EXISTS public.employment_type_enum;
+DROP TYPE IF EXISTS public.class_status_enum;
+DROP TYPE IF EXISTS public.term_enum;
+DROP TYPE IF EXISTS public.grade_enum;
+
+SELECT typname FROM pg_type WHERE typnamespace = (SELECT oid FROM pg_namespace WHERE nspname = 'public');
