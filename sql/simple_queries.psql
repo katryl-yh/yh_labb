@@ -1,0 +1,139 @@
+-- Find the program manager for a specific class
+
+SELECT
+    c.class_name,
+    p.first_name || ' ' || p.last_name AS manager_name,
+    comp.company_name,
+    em.employment_type
+FROM yrkesco.Class c
+LEFT JOIN yrkesco.Education_manager em ON c.manager_id = em.manager_id
+LEFT JOIN yrkesco.Person p ON em.person_id = p.person_id
+LEFT JOIN yrkesco.Company comp ON em.company_id = comp.company_id
+WHERE c.class_id = 1;  -- Replace with your class_id of interest
+
+-- List courses offered to a specific class
+
+SELECT
+    co.offering_id,
+    course.course_name,
+    course.course_code,
+    co.term,
+    co.year
+FROM yrkesco.Course_offering co
+JOIN yrkesco.Course course ON co.course_id = course.course_id
+WHERE co.linked_class_id = 1;  -- Replace with class_id
+
+-- add information about the Teachers
+
+
+-- Count how many unique courses a class has
+
+SELECT
+    c.class_name,
+    COUNT(DISTINCT co.course_id) AS course_count
+FROM yrkesco.Class c
+JOIN yrkesco.Course_offering co ON c.class_id = co.linked_class_id
+WHERE c.class_id = 1
+GROUP BY c.class_name;
+
+-- Find out which educators teach which courses in a class
+
+SELECT
+    p.first_name || ' ' || p.last_name AS teacher_name,
+    course.course_name,
+    co.term,
+    co.year
+FROM yrkesco.Course_offering co
+JOIN yrkesco.Teacher t ON co.teacher_id = t.teacher_id
+JOIN yrkesco.Person p ON t.person_id = p.person_id
+JOIN yrkesco.Course course ON co.course_id = course.course_id
+WHERE co.linked_class_id = 1  -- Replace with the class_id you're interested in
+ORDER BY teacher_name, course.course_name;
+
+-- Get full class overview with manager, campus, and number of students
+
+SELECT
+    c.class_name,
+    p.first_name || ' ' || p.last_name AS manager_name,
+    campus.campus_name,
+    COUNT(s.student_id) AS number_of_students
+FROM yrkesco.Class c
+LEFT JOIN yrkesco.Education_manager em ON c.manager_id = em.manager_id
+LEFT JOIN yrkesco.Person p ON em.person_id = p.person_id
+LEFT JOIN yrkesco.Campus campus ON c.campus_id = campus.campus_id
+LEFT JOIN yrkesco.Student s ON c.class_id = s.class_id
+GROUP BY c.class_name, manager_name, campus.campus_name;
+
+-- Summary of Courses Offered per Year/Term
+SELECT 
+    year,
+    term,
+    COUNT(*) AS total_courses_offered
+FROM yrkesco.Course_offering
+GROUP BY year, term
+ORDER BY year, term;
+
+-- Courses Taught by Each Teacher (with Term/Year)
+SELECT 
+    p.first_name || ' ' || p.last_name AS teacher_name,
+    co.year,
+    co.term,
+    c.course_name,
+    cl.class_name
+FROM yrkesco.Course_offering co
+JOIN yrkesco.Teacher t ON co.teacher_id = t.teacher_id
+JOIN yrkesco.Person p ON t.person_id = p.person_id
+JOIN yrkesco.Course c ON co.course_id = c.course_id
+LEFT JOIN yrkesco.Class cl ON co.linked_class_id = cl.class_id
+ORDER BY teacher_name, co.year, co.term;
+
+-- Student Report: Courses Taken + Grades
+
+SELECT 
+    s.student_id,
+    per.first_name || ' ' || per.last_name AS student_name,
+    c.course_name,
+    co.year,
+    co.term,
+    e.grade,
+    e.grade_update
+FROM yrkesco.Enrollment e
+JOIN yrkesco.Student s ON e.student_id = s.student_id
+JOIN yrkesco.Person per ON s.person_id = per.person_id
+JOIN yrkesco.Course_offering co ON e.offering_id = co.offering_id
+JOIN yrkesco.Course c ON co.course_id = c.course_id
+ORDER BY student_name, co.year, co.term;
+
+-- Program Report: All Courses Offered Per Program
+
+SELECT 
+    pr.program_name,
+    c.course_name,
+    co.year,
+    co.term,
+    cl.class_name
+FROM yrkesco.Program pr
+JOIN yrkesco.ProgramCourse pc ON pr.program_id = pc.program_id
+JOIN yrkesco.Course c ON pc.course_id = c.course_id
+JOIN yrkesco.Course_offering co ON co.course_id = c.course_id
+LEFT JOIN yrkesco.Class cl ON co.linked_class_id = cl.class_id
+WHERE cl.program_id = pr.program_id
+ORDER BY pr.program_name, co.year, co.term;
+
+-- Education Manager Report: Classes They Manage
+
+SELECT 
+    p.first_name || ' ' || p.last_name AS manager_name,
+    pr.program_name,
+    cl.class_name,
+    cl.iteration_number,
+    cl.status
+FROM yrkesco.Education_manager em
+JOIN yrkesco.Person p ON em.person_id = p.person_id
+JOIN yrkesco.Class cl ON em.manager_id = cl.manager_id
+JOIN yrkesco.Program pr ON cl.program_id = pr.program_id
+ORDER BY manager_name, pr.program_name;
+
+
+
+
