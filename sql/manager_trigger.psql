@@ -25,3 +25,25 @@ BEFORE INSERT OR UPDATE ON yrkesco.Class  -- Reference to yrkesco schema explici
 FOR EACH ROW
 WHEN (NEW.manager_id IS NOT NULL)
 EXECUTE FUNCTION yrkesco.check_class_limit();  -- Explicitly call the function in yrkesco schema
+
+---------------------
+-- TEST TRIGGER
+
+INSERT INTO yrkesco.Class(
+    class_name,
+    program_id, 
+    iteration_number, 
+    manager_id, 
+    campus_id, 
+    status) VALUES
+('BIM25', 2,3,1,2,'ongoing');
+
+INSERT INTO yrkesco.Class(
+    class_name,
+    program_id, 
+    iteration_number, 
+    manager_id, 
+    campus_id, 
+    status) VALUES
+('BIM25', 2,3,1,2,'to open');
+
