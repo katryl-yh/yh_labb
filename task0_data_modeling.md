@@ -231,7 +231,7 @@ Represents a student's participation in a course.
 
 ### Entity Relationship Notes
 
-- Every student must belong to a class.
+- Every student must belong to a class in order to be enrolled into course_offering.
 - Every course_offering links a teacher and optionally a class.
 - GDPR-sensitive data is stored in private tables.
 - Teachers and managers must be exclusive roles.
@@ -242,11 +242,11 @@ Represents a student's participation in a course.
 
 ### Normalization (3NF)
 
-- ✅ All tables use atomic values (1NF)
-- ✅ No partial dependency on composite PKs (2NF)
-- ✅ No transitive dependencies (3NF)
-- ✅ Role-specific private tables eliminate duplication
-- ✅ Clear separation between abstract and tangible entities
+- All tables use atomic values (1NF)
+- No partial dependency on composite PKs (2NF)
+- No transitive dependencies (3NF)
+- Role-specific private tables eliminate duplication
+- NOTE: Clear separation between abstract and tangible entities
 
 
 ### Conceptual ERD
