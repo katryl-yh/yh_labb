@@ -169,6 +169,28 @@ FROM teacher_course_pass_rate
 GROUP BY teacher_id, teacher_first_name, teacher_last_name
 ORDER BY average_pass_rate DESC;
 
+-- Results for stand alone courses
+
+SELECT 
+    c.course_id, 
+    c.course_name,
+    s.student_id, 
+    p.first_name, 
+    p.last_name,
+    e.grade,
+    cl.class_id,
+    cl.class_name
+FROM yrkesco.Course c
+JOIN yrkesco.Course_offering co ON c.course_id = co.course_id
+JOIN yrkesco.Enrollment e ON e.offering_id = co.offering_id
+JOIN yrkesco.Student s ON e.student_id = s.student_id
+JOIN yrkesco.Person p ON s.person_id = p.person_id
+LEFT JOIN yrkesco.Class cl ON s.class_id = cl.class_id -- Students are assigned to classes
+WHERE co.linked_class_id IS NULL -- Filter for standalone courses only (no class linked)
+ORDER BY c.course_name, s.student_id;
+
+
+
 
 
 
