@@ -1,0 +1,26 @@
+-- Create a view to monitor missing enrollments for students in ongoing classes
+CREATE OR REPLACE VIEW yrkesco.missing_enrollments_check AS
+SELECT 
+    s.student_id,                      -- The ID of the student
+    s.class_id,                        -- The class the student is enrolled in
+    co.offering_id,                    -- The course offering the student should be enrolled in
+    co.term,                           -- The academic term of the course offering
+    co.year                            -- The year of the course offering
+FROM 
+    yrkesco.Student s
+JOIN 
+    yrkesco.Class c 
+    ON s.class_id = c.class_id         -- Join to get the class details for each student
+JOIN 
+    yrkesco.Course_offering co 
+    ON co.linked_class_id = c.class_id -- Join to get course offerings for the student's class
+LEFT JOIN 
+    yrkesco.Enrollment e 
+    ON e.student_id = s.student_id 
+   AND e.offering_id = co.offering_id  -- Check if the student is enrolled in that offering
+WHERE 
+    c.status = 'ongoing'               -- Only consider classes that are currently ongoing
+    AND e.student_id IS NULL;          -- Identify missing enrollments (i.e., no match found)
+
+
+SELECT * FROM yrkesco.missing_enrollments_check;

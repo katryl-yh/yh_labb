@@ -1,0 +1,115 @@
+-- List of students enrolled in the teacher's courses with their grades
+-- for a particular term
+
+SELECT 
+    s.student_id, 
+    p.first_name, 
+    p.last_name, 
+    e.grade, 
+    co.term, 
+    co.year, 
+    c2.course_name, 
+    c.class_name       -- Class name the student is enrolled in
+FROM yrkesco.Enrollment e
+JOIN yrkesco.Student s ON e.student_id = s.student_id
+JOIN yrkesco.Person p ON s.person_id = p.person_id  -- Get student names
+JOIN yrkesco.Course_offering co ON e.offering_id = co.offering_id
+JOIN yrkesco.Course c2 ON co.course_id = c2.course_id  -- Get course name
+JOIN yrkesco.Class c ON co.linked_class_id = c.class_id  -- Join to get class info
+WHERE co.teacher_id = 1  -- Specify teacher_id (replace with the teacher's ID)
+  AND co.term = 'VT'  -- You can replace 'VT' with any term input
+  AND co.year = 2024  -- Replace 2024 with the desired year input
+ORDER BY c2.course_name, grade ASC;
+
+
+-- List all course offerings the teacher is responsible for
+
+SELECT 
+    co.offering_id,  -- Course Offering ID, to be used for filtering in Query 2
+    c2.course_name, 
+    co.term, 
+    co.year, 
+    c.class_name,    -- Class name where the course offering belongs
+    c.class_id       -- Class ID for the teacher to reference
+FROM yrkesco.Course_offering co
+JOIN yrkesco.Course c2 ON co.course_id = c2.course_id
+JOIN yrkesco.Class c ON co.linked_class_id = c.class_id
+WHERE co.teacher_id = 3  -- Specify teacher_id (replace with the actual teacher's ID)
+ORDER BY co.year DESC, co.term DESC, c2.course_name;
+
+
+-- Give teacher ability to select a specific course offering 
+-- to view the list of students who failed in that course
+
+SELECT 
+    s.student_id, 
+    p.first_name, 
+    p.last_name, 
+    c2.course_name, 
+    e.grade, 
+    co.term, 
+    co.year,
+    c.class_name       -- Class name the student belongs to
+FROM yrkesco.Enrollment e
+JOIN yrkesco.Student s ON e.student_id = s.student_id
+JOIN yrkesco.Person p ON s.person_id = p.person_id
+JOIN yrkesco.Course_offering co ON e.offering_id = co.offering_id
+JOIN yrkesco.Course c2 ON co.course_id = c2.course_id
+JOIN yrkesco.Class c ON co.linked_class_id = c.class_id
+WHERE co.offering_id = 39  -- Specify the offering_id selected by the teacher
+  AND e.grade = 'IG'  -- Students who received 'IG' grade (failed)
+ORDER BY co.year DESC, co.term DESC, c2.course_name, s.student_id;
+
+-- Give teacher ability to view the average grade of their course offerings
+
+SELECT 
+    c2.course_name, 
+    co.term, 
+    co.year, 
+    ROUND(
+        AVG(
+            CASE 
+                WHEN e.grade = 'IG' THEN 0
+                WHEN e.grade = 'G' THEN 1
+                WHEN e.grade = 'VG' THEN 2
+                ELSE NULL
+            END
+        ), 1
+    ) AS avg_grade
+FROM yrkesco.Enrollment e
+JOIN yrkesco.Course_offering co ON e.offering_id = co.offering_id
+JOIN yrkesco.Course c2 ON co.course_id = c2.course_id
+WHERE co.teacher_id = 5  -- Specify teacher_id
+GROUP BY c2.course_name, co.term, co.year
+ORDER BY co.year DESC, co.term DESC;
+
+-- List upcoming courses for the teacher to teach in the next term
+
+SELECT 
+    c2.course_name, 
+    co.term, 
+    co.year, 
+    co.offering_id
+FROM yrkesco.Course_offering co
+JOIN yrkesco.Course c2 ON co.course_id = c2.course_id
+WHERE co.teacher_id = 3  -- Specify teacher_id
+  AND co.year = 2025  -- Specify upcoming year (replace as needed)
+  AND co.term = 'HT'  -- Specify upcoming term (replace as needed)
+ORDER BY co.term, co.year;
+
+-- List all course offerings taught by the teacher (including past ones)
+
+SELECT 
+    c2.course_name, 
+    co.term, 
+    co.year, 
+    COUNT(e.student_id) AS num_enrolled
+FROM yrkesco.Course_offering co
+JOIN yrkesco.Course c2 ON co.course_id = c2.course_id
+LEFT JOIN yrkesco.Enrollment e ON e.offering_id = co.offering_id
+WHERE co.teacher_id = 5  -- Specify teacher_id
+GROUP BY c2.course_name, co.term, co.year
+ORDER BY co.year DESC, co.term DESC;
+
+
+

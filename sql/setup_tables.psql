@@ -113,6 +113,9 @@ CREATE TABLE IF NOT EXISTS yrkesco.Class (
     status yrkesco.class_status_enum NOT NULL
 );
 
+ALTER TABLE yrkesco.Class
+ADD CONSTRAINT unique_program_iteration UNIQUE (program_id, iteration_number);
+
 -- STUDENT
 CREATE TABLE IF NOT EXISTS yrkesco.Student (
     student_id SERIAL PRIMARY KEY,

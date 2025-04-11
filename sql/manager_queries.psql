@@ -1,0 +1,107 @@
+-- Question: 
+-- Who are the students at school who failed a course in this term?
+
+SELECT s.student_id, c.class_name, e.grade
+FROM yrkesco.Enrollment e
+JOIN yrkesco.Student s ON e.student_id = s.student_id
+JOIN yrkesco.Course_offering co ON e.offering_id = co.offering_id
+JOIN yrkesco.Class c ON co.linked_class_id = c.class_id
+WHERE e.grade = 'IG' AND co.year = 2024 AND co.term = 'HT';
+
+-- Question: 
+-- Who are the students in the classes that manager_id=1
+-- is responsible for, who failed more than one course this term?
+
+SELECT 
+    s.student_id, 
+    p.first_name, 
+    p.last_name, 
+    COUNT(e.offering_id) AS failed_courses_count
+FROM yrkesco.Enrollment e
+JOIN yrkesco.Student s ON e.student_id = s.student_id
+JOIN yrkesco.Person p ON s.person_id = p.person_id  -- Join with Person to get first_name, last_name
+JOIN yrkesco.Course_offering co ON e.offering_id = co.offering_id
+JOIN yrkesco.Class c ON co.linked_class_id = c.class_id
+WHERE e.grade = 'IG' 
+  AND co.year = 2025 
+  AND co.term = 'VT'
+  AND c.manager_id = 2  -- Specific manager ID
+GROUP BY s.student_id, p.first_name, p.last_name
+HAVING COUNT(e.offering_id) > 1  -- Students who failed more than one course
+ORDER BY failed_courses_count DESC;  -- Optional: Order by the number of failed courses
+
+-- Question?
+-- Who are the students managed by the specified manager who have failed more than one course in VT 2025, 
+-- and what are the names of the failed courses?
+SELECT 
+    s.student_id, 
+    p.first_name, 
+    p.last_name, 
+    STRING_AGG(c2.course_name, ', ') AS failed_courses, -- List the names of the failed courses
+    COUNT(e.offering_id) AS failed_courses_count -- Count the number of failed courses
+FROM yrkesco.Enrollment e
+JOIN yrkesco.Student s ON e.student_id = s.student_id
+JOIN yrkesco.Person p ON s.person_id = p.person_id  -- Join with Person to get first_name, last_name
+JOIN yrkesco.Course_offering co ON e.offering_id = co.offering_id
+JOIN yrkesco.Class c ON co.linked_class_id = c.class_id
+JOIN yrkesco.Course c2 ON co.course_id = c2.course_id  -- Join with Course to get course_name
+WHERE e.grade = 'IG' 
+  AND co.year = 2025 
+  AND co.term = 'VT'
+  AND c.manager_id = 2  -- Specific manager ID
+GROUP BY s.student_id, p.first_name, p.last_name
+HAVING COUNT(e.offering_id) > 1  -- Students who failed more than one course
+ORDER BY failed_courses_count DESC;  -- Order by the number of failed courses
+
+/* query that shows the pass rate for each course offering in a specific class 
+managed by a given manager. 
+The pass rate is calculated as the percentage of students who passed (i.e., have a grade other than 'IG') 
+out of the total number of students enrolled in the course offering.
+components of the query:
+- We filter by manager_id and class_id to find the relevant courses.
+- We want the list of course offerings for the given class.
+- Teacher Name: We need to get the teacher's name based on the course offering.
+- Pass Rate: We calculate the pass rate based on the students' grades in each course offering.*/
+
+SELECT 
+    co.offering_id,  -- The unique identifier for the course offering
+    c2.course_name,  -- The name of the course
+    co.term,         -- The term for the course offering (e.g., HT or VT)
+    co.year,         -- The year for the course offering
+    p.first_name AS teacher_first_name,  -- Teacher's first name
+    p.last_name AS teacher_last_name,    -- Teacher's last name
+    ROUND(
+        (COUNT(CASE WHEN e.grade != 'IG' THEN 1 END) * 100.0) / COUNT(e.student_id),  -- Calculate pass rate
+        2  -- Round the pass rate to 2 decimal places
+    ) AS pass_rate  -- Alias for the calculated pass rate percentage
+FROM yrkesco.Course_offering co
+JOIN yrkesco.Class c ON co.linked_class_id = c.class_id  -- Join with the Class table to get the class details
+JOIN yrkesco.Course c2 ON co.course_id = c2.course_id  -- Join with the Course table to get the course name
+JOIN yrkesco.Teacher t ON co.teacher_id = t.teacher_id  -- Join with Teacher to get the teacher for the course offering
+JOIN yrkesco.Person p ON t.person_id = p.person_id  -- Join with Person to get the teacher's first and last name
+LEFT JOIN yrkesco.Enrollment e ON e.offering_id = co.offering_id  -- Left join with Enrollment to get students and calculate pass rate
+WHERE c.manager_id = 1  -- Specify the manager ID (replace '1' with the target manager ID)
+  AND c.class_id = 1  -- Specify the class ID (replace '123' with the target class ID)
+GROUP BY co.offering_id, c2.course_name, co.term, co.year, p.first_name, p.last_name  -- Group by offering and course details
+ORDER BY co.year, co.term, c2.course_name;  -- Sort by year, term, and course name for better readability
+
+
+--  List the total number of each grade for students in a specific class
+SELECT 
+    c.class_id,                   -- Class ID
+    c.class_name,                 -- Class Name
+    s.student_id, 
+    p.first_name, 
+    p.last_name, 
+    COUNT(CASE WHEN e.grade = 'NOT SET' THEN 1 END) AS not_set_count,  -- Count of 'NOT SET' grades
+    COUNT(CASE WHEN e.grade = 'IG' THEN 1 END) AS ig_count,           -- Count of 'IG' grades
+    COUNT(CASE WHEN e.grade = 'G' THEN 1 END) AS g_count,             -- Count of 'G' grades
+    COUNT(CASE WHEN e.grade = 'VG' THEN 1 END) AS vg_count            -- Count of 'VG' grades
+FROM yrkesco.Enrollment e
+JOIN yrkesco.Student s ON e.student_id = s.student_id
+JOIN yrkesco.Person p ON s.person_id = p.person_id
+JOIN yrkesco.Course_offering co ON e.offering_id = co.offering_id
+JOIN yrkesco.Class c ON co.linked_class_id = c.class_id
+WHERE c.class_id = 3  -- Specify the class_id (replace with the actual class ID you want to filter)
+GROUP BY c.class_id, c.class_name, s.student_id, p.first_name, p.last_name
+ORDER BY c.class_id, s.student_id;

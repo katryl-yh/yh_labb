@@ -1,0 +1,72 @@
+-- Check for orphaned addresses (not used by any company or campus)
+
+SELECT a.address_id
+FROM yrkesco.Address a
+LEFT JOIN yrkesco.Company c ON a.address_id = c.address_id
+LEFT JOIN yrkesco.Campus ca ON a.address_id = ca.address_id
+WHERE c.address_id IS NULL AND ca.address_id IS NULL;
+
+-- Check for persons not assigned to any role 
+-- (Teacher, Student, or Education Manager)
+
+SELECT p.person_id, p.first_name, p.last_name
+FROM yrkesco.Person p
+LEFT JOIN yrkesco.Teacher t ON p.person_id = t.person_id
+LEFT JOIN yrkesco.Student s ON p.person_id = s.person_id
+LEFT JOIN yrkesco.Education_manager em ON p.person_id = em.person_id
+WHERE t.person_id IS NULL AND s.person_id IS NULL AND em.person_id IS NULL;
+
+-- Validate hourly_rate rules on companies
+
+SELECT *
+FROM yrkesco.Company
+WHERE (company_id = 1 AND hourly_rate != 0)
+   OR (company_id != 1 AND hourly_rate <= 0);
+
+-- Validate that all students are in valid classes
+
+SELECT s.student_id, s.class_id
+FROM yrkesco.Student s
+LEFT JOIN yrkesco.Class c ON s.class_id = c.class_id
+WHERE c.class_id IS NULL;
+
+-- Validate grade/update logic in Enrollment
+
+SELECT *
+FROM yrkesco.Enrollment
+WHERE (grade = 'NOT SET' AND grade_update IS NOT NULL)
+   OR (grade != 'NOT SET' AND grade_update IS NULL);
+
+/*Check that Every student in a class with status 'ongoing' 
+has enrollments for all course offerings linked to that class (via linked_class_id)
+for valid terms.
+Query will start from Enrollment:
+- Enrollment: (student_id, offering_id)
+- Course_offering: offering_id → linked_class_id
+- Class: class_id → status = 'ongoing'
+- Student: student_id → class_id */
+
+SELECT 
+    s.student_id,
+    s.class_id,
+    co.offering_id,
+    co.term,
+    co.year
+FROM 
+    yrkesco.Student s
+JOIN 
+    yrkesco.Class c ON s.class_id = c.class_id
+JOIN 
+    yrkesco.Course_offering co ON co.linked_class_id = c.class_id
+LEFT JOIN 
+    yrkesco.Enrollment e ON e.student_id = s.student_id AND e.offering_id = co.offering_id
+WHERE 
+    c.status = 'ongoing'
+    AND e.student_id IS NULL;
+
+-- Returns 0 rows which suggests that:
+--  Every student in an 'ongoing' class is enrolled in every course offering linked to their class.
+--  No missing enrollments for expected offerings.
+
+
+
