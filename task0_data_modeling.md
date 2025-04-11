@@ -251,7 +251,7 @@ Represents a student's participation in a course.
 
 ### Conceptual ERD
 
-<img src = "/assets/ex2_0_ezecream_ERD.png">
+<img src = "/assets/YH_v7_conceptual ERD.png">
 
 ### Logical ERD
 
