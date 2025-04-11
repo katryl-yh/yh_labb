@@ -1,0 +1,152 @@
+Project YrkesCo {
+  database_type: "PostgreSQL"
+}
+
+Table Person {
+  person_id integer [pk]
+  first_name varchar
+  last_name varchar
+  school_email varchar [unique]
+  personal_email varchar [unique]
+
+  Note: "Base person entity. Cannot have multiple roles (enforced via logic)."
+}
+
+Table Student {
+  student_id integer [pk]
+  person_id integer [ref: > Person.person_id]
+  class_id integer [ref: > Class.class_id]
+
+  Note: "Each student must belong to a class (even for standalone courses)."
+}
+
+Table Private_Student {
+  student_id integer [pk, ref: > Student.student_id]
+  personal_number char [unique]
+
+  Note: "Personal info kept separate for GDPR."
+}
+
+Table Education_manager {
+  manager_id integer [pk]
+  person_id integer [ref: > Person.person_id]
+  company_id integer [ref: > Company.company_id]
+  employment_type enum
+
+  Note: "Always employed directly by YrkesCo (company_id = 1)."
+}
+
+Table Private_Education_manager {
+  manager_id integer [pk, ref: > Education_manager.manager_id]
+  personal_number char [unique]
+}
+
+Table Teacher {
+  teacher_id integer [pk]
+  person_id integer [ref: > Person.person_id]
+  company_id integer [ref: > Company.company_id]
+  employment_type enum
+
+  Note: "company_id = 1 for permanent teachers."
+}
+
+Table Private_Teacher {
+  teacher_id integer [pk, ref: > Teacher.teacher_id]
+  personal_number char [unique]
+}
+
+
+Table Company {
+  company_id integer [pk]
+  company_name varchar
+  organization_number varchar
+  is_F_tax boolean
+  address_id integer [ref: > Address.address_id]
+  hourly_rate decimal
+
+  Note: "hourly_rate is NULL for permanent staff. Constraint should be enforced."
+}
+
+Table Address {
+  address_id integer [pk]
+  street varchar
+  building_number varchar
+  postal_code varchar
+  city_id integer [ref: > City.city_id]
+}
+
+Table City {
+  city_id integer [pk]
+  city_name varchar
+  country_name varchar
+}
+
+Table Program {
+  program_id integer [pk]
+  program_name varchar
+  program_duration_years integer
+  total_credits integer
+  approved_iterations integer
+
+  Note: "Programs are abstract and tied to no specific location."
+}
+
+Table Class {
+  class_id integer [pk]
+  class_name varchar
+  program_id integer [ref: > Program.program_id]
+  iteration_number integer
+  manager_id integer [ref: > Education_manager.manager_id]
+  campus_id integer [ref: > Campus.campus_id]
+  status enum
+
+  Note: "Each class is a tangible instance of a program and inherits its courses."
+}
+
+Table Course {
+  course_id integer [pk]
+  course_name varchar
+  course_code varchar [unique]
+  course_credits integer
+  course_description text
+}
+
+Table Course_offering {
+  offering_id integer [pk]
+  course_id integer [ref: > Course.course_id]
+  term enum
+  year integer
+  student_limit integer
+  campus_id integer [ref: > Campus.campus_id]
+  linked_class_id integer [ref: > Class.class_id, null]
+  teacher_id integer [ref: > Teacher.teacher_id]
+
+  Note: "NULL class_id = standalone course."
+}
+
+Table Campus {
+  campus_id integer [pk]
+  campus_name varchar
+  address_id integer [ref: > Address.address_id]
+
+  Note: "Online classes use a 'virtual campus'."
+}
+
+Table Program_course {
+  program_id integer [pk, ref: > Program.program_id]
+  course_id integer [pk, ref: > Course.course_id]
+
+  Note: "Many-to-many relation linking programs to courses."
+}
+
+Table Enrollment {
+  student_id integer [pk, ref: > Student.student_id]
+  course_offering_id integer [pk, ref: > Course_offering.offering_id]
+  grade enum
+  grade_update date
+
+  Note: "Tracks enrollment and grades per offering."
+}
+
+
+
