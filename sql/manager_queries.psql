@@ -1,14 +1,4 @@
 -- Question: 
--- Who are the students at school who failed a course in this term?
-
-SELECT s.student_id, c.class_name, e.grade
-FROM yrkesco.Enrollment e
-JOIN yrkesco.Student s ON e.student_id = s.student_id
-JOIN yrkesco.Course_offering co ON e.offering_id = co.offering_id
-JOIN yrkesco.Class c ON co.linked_class_id = c.class_id
-WHERE e.grade = 'IG' AND co.year = 2024 AND co.term = 'HT';
-
--- Question: 
 -- Who are the students in the classes that manager_id=1
 -- is responsible for, who failed more than one course this term?
 
@@ -55,8 +45,10 @@ ORDER BY failed_courses_count DESC;  -- Order by the number of failed courses
 
 /* query that shows the pass rate for each course offering in a specific class 
 managed by a given manager. 
+
 The pass rate is calculated as the percentage of students who passed (i.e., have a grade other than 'IG') 
 out of the total number of students enrolled in the course offering.
+
 components of the query:
 - We filter by manager_id and class_id to find the relevant courses.
 - We want the list of course offerings for the given class.

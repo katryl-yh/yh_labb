@@ -190,7 +190,15 @@ WHERE co.linked_class_id IS NULL -- Filter for standalone courses only (no class
 ORDER BY c.course_name, s.student_id;
 
 
+-- Question: 
+-- Who are the students at school who failed a course in this term?
 
+SELECT s.student_id, c.class_name, e.grade
+FROM yrkesco.Enrollment e
+JOIN yrkesco.Student s ON e.student_id = s.student_id
+JOIN yrkesco.Course_offering co ON e.offering_id = co.offering_id
+JOIN yrkesco.Class c ON co.linked_class_id = c.class_id
+WHERE e.grade = 'IG' AND co.year = 2024 AND co.term = 'HT';
 
 
 
