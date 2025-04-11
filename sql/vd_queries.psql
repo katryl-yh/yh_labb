@@ -1,71 +1,76 @@
--- List of students enrolled in the teacher's courses with their grades
--- for a particular term
+-- Pass Rate (Percentage of Students with a Grade of 'G' or 'VG')
 
 SELECT 
-    s.student_id, 
-    p.first_name, 
-    p.last_name, 
-    e.grade, 
-    co.term, 
-    co.year, 
-    c2.course_name, 
-    c.class_name       -- Class name the student is enrolled in
-FROM yrkesco.Enrollment e
-JOIN yrkesco.Student s ON e.student_id = s.student_id
-JOIN yrkesco.Person p ON s.person_id = p.person_id  -- Get student names
-JOIN yrkesco.Course_offering co ON e.offering_id = co.offering_id
-JOIN yrkesco.Course c2 ON co.course_id = c2.course_id  -- Get course name
-JOIN yrkesco.Class c ON co.linked_class_id = c.class_id  -- Join to get class info
-WHERE co.teacher_id = 1  -- Specify teacher_id (replace with the teacher's ID)
-  AND co.term = 'VT'  -- You can replace 'VT' with any term input
-  AND co.year = 2024  -- Replace 2024 with the desired year input
-ORDER BY c2.course_name, grade ASC;
+    c.class_id,
+    c.class_name,
+    ROUND(
+        (COUNT(CASE WHEN e.grade IN ('G', 'VG') THEN 1 END) * 100.0) / COUNT(e.student_id), 1
+    ) AS pass_rate_percentage
+FROM yrkesco.Class c
+JOIN yrkesco.Course_offering co ON co.linked_class_id = c.class_id
+JOIN yrkesco.Enrollment e ON co.offering_id = e.offering_id
+GROUP BY c.class_id, c.class_name
+ORDER BY pass_rate_percentage DESC;
 
+-- Number of students who failed in a class,
+-- which can help track students in need of intervention
 
--- List all course offerings the teacher is responsible for
+WITH ig_counts AS (
+    -- Count the number of 'IG' grades per student in each class
+    SELECT 
+        e.student_id,
+        c.class_id,
+        COUNT(CASE WHEN e.grade = 'IG' THEN 1 END) AS ig_count
+    FROM yrkesco.Enrollment e
+    JOIN yrkesco.Course_offering co ON e.offering_id = co.offering_id
+    JOIN yrkesco.Class c ON co.linked_class_id = c.class_id
+    WHERE e.grade = 'IG'  -- Only count 'IG' grades
+    GROUP BY e.student_id, c.class_id
+)
+-- Now, count how many students have 1, 2, 3, or 4+ IGs in each class
+SELECT 
+    c.class_id,
+    c.class_name,
+    -- Count students with exactly 1 'IG'
+    COUNT(CASE WHEN ic.ig_count = 1 THEN 1 END) AS students_with_1_ig,
+    -- Count students with exactly 2 'IG'
+    COUNT(CASE WHEN ic.ig_count = 2 THEN 1 END) AS students_with_2_igs,
+    -- Count students with exactly 3 'IG'
+    COUNT(CASE WHEN ic.ig_count = 3 THEN 1 END) AS students_with_3_igs,
+    -- Count students with 4 or more 'IG' grades
+    COUNT(CASE WHEN ic.ig_count >= 4 THEN 1 END) AS students_with_4_or_more_igs
+FROM ig_counts ic
+JOIN yrkesco.Class c ON ic.class_id = c.class_id
+GROUP BY c.class_id, c.class_name
+ORDER BY c.class_id;
+
+-- Number of students that have passed all the courses in the class
+-- so far
 
 SELECT 
-    co.offering_id,  -- Course Offering ID, to be used for filtering in Query 2
-    c2.course_name, 
-    co.term, 
-    co.year, 
-    c.class_name,    -- Class name where the course offering belongs
-    c.class_id       -- Class ID for the teacher to reference
-FROM yrkesco.Course_offering co
-JOIN yrkesco.Course c2 ON co.course_id = c2.course_id
-JOIN yrkesco.Class c ON co.linked_class_id = c.class_id
-WHERE co.teacher_id = 3  -- Specify teacher_id (replace with the actual teacher's ID)
-ORDER BY co.year DESC, co.term DESC, c2.course_name;
+    s.class_id,
+    s.class_name,
+    COUNT(DISTINCT CASE WHEN s.failed_courses_count = 0 THEN s.student_id END) AS students_passed_all_courses
+FROM (
+    SELECT 
+        c.class_id,
+        c.class_name,
+        e.student_id,
+        COUNT(CASE WHEN e.grade = 'IG' THEN 1 END) AS failed_courses_count
+    FROM yrkesco.Enrollment e
+    JOIN yrkesco.Course_offering co ON e.offering_id = co.offering_id
+    JOIN yrkesco.Class c ON co.linked_class_id = c.class_id
+    WHERE e.grade != 'NOT SET'  -- Consider only students with a grade
+    GROUP BY c.class_id, c.class_name, e.student_id
+) AS s
+GROUP BY s.class_id, s.class_name
+ORDER BY s.class_id;
 
-
--- Give teacher ability to select a specific course offering 
--- to view the list of students who failed in that course
-
-SELECT 
-    s.student_id, 
-    p.first_name, 
-    p.last_name, 
-    c2.course_name, 
-    e.grade, 
-    co.term, 
-    co.year,
-    c.class_name       -- Class name the student belongs to
-FROM yrkesco.Enrollment e
-JOIN yrkesco.Student s ON e.student_id = s.student_id
-JOIN yrkesco.Person p ON s.person_id = p.person_id
-JOIN yrkesco.Course_offering co ON e.offering_id = co.offering_id
-JOIN yrkesco.Course c2 ON co.course_id = c2.course_id
-JOIN yrkesco.Class c ON co.linked_class_id = c.class_id
-WHERE co.offering_id = 39  -- Specify the offering_id selected by the teacher
-  AND e.grade = 'IG'  -- Students who received 'IG' grade (failed)
-ORDER BY co.year DESC, co.term DESC, c2.course_name, s.student_id;
-
--- Give teacher ability to view the average grade of their course offerings
+-- Average grade in each class, which gives an overview of the overall performance.
 
 SELECT 
-    c2.course_name, 
-    co.term, 
-    co.year, 
+    c.class_id,
+    c.class_name,
     ROUND(
         AVG(
             CASE 
@@ -76,40 +81,95 @@ SELECT
             END
         ), 1
     ) AS avg_grade
+FROM yrkesco.Class c
+JOIN yrkesco.Course_offering co ON co.linked_class_id = c.class_id
+JOIN yrkesco.Enrollment e ON co.offering_id = e.offering_id
+GROUP BY c.class_id, c.class_name
+ORDER BY avg_grade DESC;
+
+
+-- Percentage of students 
+-- who have completed (passed) a particular course.
+
+SELECT 
+    c.class_id,
+    c.class_name,
+    cr.course_name,
+    COUNT(DISTINCT CASE WHEN e.grade IN ('G', 'VG') THEN e.student_id END) AS students_passed,
+    COUNT(DISTINCT e.student_id) AS total_students_in_class,
+    ROUND(
+        (COUNT(DISTINCT CASE WHEN e.grade IN ('G', 'VG') THEN e.student_id END) * 100.0) 
+        / COUNT(DISTINCT e.student_id), 1
+    ) AS pass_rate_percentage
 FROM yrkesco.Enrollment e
 JOIN yrkesco.Course_offering co ON e.offering_id = co.offering_id
-JOIN yrkesco.Course c2 ON co.course_id = c2.course_id
-WHERE co.teacher_id = 5  -- Specify teacher_id
-GROUP BY c2.course_name, co.term, co.year
-ORDER BY co.year DESC, co.term DESC;
+JOIN yrkesco.Course cr ON co.course_id = cr.course_id
+JOIN yrkesco.Class c ON co.linked_class_id = c.class_id
+WHERE e.grade != 'NOT SET'  -- Exclude rows where the grade is 'NOT SET'
+GROUP BY c.class_id, c.class_name, cr.course_name
+ORDER BY c.class_id, cr.course_name;
 
--- List upcoming courses for the teacher to teach in the next term
-
-SELECT 
-    c2.course_name, 
-    co.term, 
-    co.year, 
-    co.offering_id
-FROM yrkesco.Course_offering co
-JOIN yrkesco.Course c2 ON co.course_id = c2.course_id
-WHERE co.teacher_id = 3  -- Specify teacher_id
-  AND co.year = 2025  -- Specify upcoming year (replace as needed)
-  AND co.term = 'HT'  -- Specify upcoming term (replace as needed)
-ORDER BY co.term, co.year;
-
--- List all course offerings taught by the teacher (including past ones)
+-- Pass Rate Percentage for Each Teacher’s Courses
 
 SELECT 
-    c2.course_name, 
-    co.term, 
-    co.year, 
-    COUNT(e.student_id) AS num_enrolled
-FROM yrkesco.Course_offering co
-JOIN yrkesco.Course c2 ON co.course_id = c2.course_id
-LEFT JOIN yrkesco.Enrollment e ON e.offering_id = co.offering_id
-WHERE co.teacher_id = 5  -- Specify teacher_id
-GROUP BY c2.course_name, co.term, co.year
-ORDER BY co.year DESC, co.term DESC;
+    c.class_id,
+    c.class_name,
+    cr.course_name,
+    t.first_name AS teacher_first_name,
+    t.last_name AS teacher_last_name,
+    COUNT(DISTINCT CASE WHEN e.grade IN ('G', 'VG') THEN e.student_id END) AS students_passed,
+    COUNT(DISTINCT e.student_id) AS total_students_in_class,
+    ROUND(
+        (COUNT(DISTINCT CASE WHEN e.grade IN ('G', 'VG') THEN e.student_id END) * 100.0) 
+        / COUNT(DISTINCT e.student_id), 1
+    ) AS pass_rate_percentage
+FROM yrkesco.Enrollment e
+JOIN yrkesco.Course_offering co ON e.offering_id = co.offering_id
+JOIN yrkesco.Course cr ON co.course_id = cr.course_id
+JOIN yrkesco.Class c ON co.linked_class_id = c.class_id
+JOIN yrkesco.Person t ON co.teacher_id = t.person_id -- Join with Person table to get teacher's name
+WHERE e.grade != 'NOT SET'  -- Exclude rows where the grade is 'NOT SET'
+AND co.teacher_id = 1  -- Replace 123 with the actual teacher ID you want to filter by
+GROUP BY c.class_id, c.class_name, cr.course_name, t.first_name, t.last_name
+ORDER BY c.class_id, cr.course_name;
+
+/* Compare teachers and calculate an average of their average passing rates
+ across all their courses in two steps:
+- 1: calculate the pass rate for each course taught by each teacher.
+- 2: calculate the average of these individual course pass rates per teacher.*/
+
+WITH teacher_course_pass_rate AS (
+    SELECT 
+        co.teacher_id,
+        p.first_name AS teacher_first_name,
+        p.last_name AS teacher_last_name,
+        c.class_id,
+        c.class_name,
+        cr.course_name,
+        COUNT(DISTINCT CASE WHEN e.grade IN ('G', 'VG') THEN e.student_id END) AS students_passed,
+        COUNT(DISTINCT e.student_id) AS total_students_in_class,
+        ROUND(
+            (COUNT(DISTINCT CASE WHEN e.grade IN ('G', 'VG') THEN e.student_id END) * 100.0) 
+            / COUNT(DISTINCT e.student_id), 1
+        ) AS pass_rate_percentage
+    FROM yrkesco.Enrollment e
+    JOIN yrkesco.Course_offering co ON e.offering_id = co.offering_id
+    JOIN yrkesco.Course cr ON co.course_id = cr.course_id
+    JOIN yrkesco.Class c ON co.linked_class_id = c.class_id
+    JOIN yrkesco.Person p ON co.teacher_id = p.person_id  -- Join with Person table to get teacher's name
+    WHERE e.grade != 'NOT SET'  -- Exclude rows where the grade is 'NOT SET'
+    GROUP BY co.teacher_id, p.first_name, p.last_name, c.class_id, c.class_name, cr.course_name
+)
+SELECT 
+    teacher_id,
+    teacher_first_name,
+    teacher_last_name,
+    ROUND(AVG(pass_rate_percentage), 1) AS average_pass_rate
+FROM teacher_course_pass_rate
+GROUP BY teacher_id, teacher_first_name, teacher_last_name
+ORDER BY average_pass_rate DESC;
+
+
 
 
 
