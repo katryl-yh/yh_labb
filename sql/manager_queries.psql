@@ -1,4 +1,14 @@
 -- Question: 
+-- Find the classes managed by a specific Education manager
+
+SELECT
+    c.class_id,
+    c.class_name,
+    c.status
+FROM yrkesco.Class c
+WHERE c.manager_id = 1;
+
+-- Question: 
 -- Who are the students in the classes that manager_id=1
 -- is responsible for, who failed more than one course this term?
 
@@ -6,7 +16,8 @@ SELECT
     s.student_id, 
     p.first_name, 
     p.last_name, 
-    COUNT(e.offering_id) AS failed_courses_count
+    COUNT(e.offering_id) AS failed_courses_count,
+    s.class_id
 FROM yrkesco.Enrollment e
 JOIN yrkesco.Student s ON e.student_id = s.student_id
 JOIN yrkesco.Person p ON s.person_id = p.person_id  -- Join with Person to get first_name, last_name

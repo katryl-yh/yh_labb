@@ -23,9 +23,6 @@ FROM yrkesco.Course_offering co
 JOIN yrkesco.Course course ON co.course_id = course.course_id
 WHERE co.linked_class_id = 1;  -- Replace with class_id
 
--- add information about the Teachers
-
-
 -- Count how many unique courses a class has
 
 SELECT
