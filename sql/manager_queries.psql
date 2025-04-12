@@ -31,7 +31,7 @@ GROUP BY s.student_id, p.first_name, p.last_name
 HAVING COUNT(e.offering_id) > 1  -- Students who failed more than one course
 ORDER BY failed_courses_count DESC;  -- Optional: Order by the number of failed courses
 
--- Question?
+-- Question:
 -- Who are the students managed by the specified manager who have failed more than one course in VT 2025, 
 -- and what are the names of the failed courses?
 SELECT 
@@ -54,10 +54,12 @@ GROUP BY s.student_id, p.first_name, p.last_name
 HAVING COUNT(e.offering_id) > 1  -- Students who failed more than one course
 ORDER BY failed_courses_count DESC;  -- Order by the number of failed courses
 
-/* query that shows the pass rate for each course offering in a specific class 
+/* Question:
+Show the pass rate for each course offering in a specific class 
 managed by a given manager. 
 
-The pass rate is calculated as the percentage of students who passed (i.e., have a grade other than 'IG') 
+The pass rate is calculated as the percentage of students who passed 
+(i.e., have a grade other than 'IG') 
 out of the total number of students enrolled in the course offering.
 
 components of the query:

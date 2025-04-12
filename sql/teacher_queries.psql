@@ -1,3 +1,4 @@
+-- Question:
 -- List of students enrolled in the teacher's courses with their grades
 -- for a particular term
 
@@ -21,7 +22,7 @@ WHERE co.teacher_id = 1  -- Specify teacher_id (replace with the teacher's ID)
   AND co.year = 2024  -- Replace 2024 with the desired year input
 ORDER BY c2.course_name, grade ASC;
 
-
+-- Question:
 -- List all course offerings the teacher is responsible for
 
 SELECT 
@@ -37,9 +38,8 @@ JOIN yrkesco.Class c ON co.linked_class_id = c.class_id
 WHERE co.teacher_id = 3  -- Specify teacher_id (replace with the actual teacher's ID)
 ORDER BY co.year DESC, co.term DESC, c2.course_name;
 
-
--- Give teacher ability to select a specific course offering 
--- to view the list of students who failed in that course
+-- Question:
+-- View the list of students who failed in a specific course offering
 
 SELECT 
     s.student_id, 
@@ -60,7 +60,8 @@ WHERE co.offering_id = 39  -- Specify the offering_id selected by the teacher
   AND e.grade = 'IG'  -- Students who received 'IG' grade (failed)
 ORDER BY co.year DESC, co.term DESC, c2.course_name, s.student_id;
 
--- Give teacher ability to view the average grade of their course offerings
+-- Question:
+-- View the average grade of their course offerings
 
 SELECT 
     c2.course_name, 
@@ -83,6 +84,7 @@ WHERE co.teacher_id = 5  -- Specify teacher_id
 GROUP BY c2.course_name, co.term, co.year
 ORDER BY co.year DESC, co.term DESC;
 
+-- Question:
 -- List upcoming courses for the teacher to teach in the next term
 
 SELECT 
@@ -97,6 +99,7 @@ WHERE co.teacher_id = 3  -- Specify teacher_id
   AND co.term = 'HT'  -- Specify upcoming term (replace as needed)
 ORDER BY co.term, co.year;
 
+-- Question:
 -- List all course offerings taught by the teacher (including past ones)
 
 SELECT 

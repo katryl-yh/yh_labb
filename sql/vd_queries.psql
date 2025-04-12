@@ -1,4 +1,5 @@
--- Pass Rate (Percentage of Students with a Grade of 'G' or 'VG')
+-- Question:
+-- Show pass Rate (Percentage of Students with a Grade of 'G' or 'VG')
 
 SELECT 
     c.class_id,
@@ -12,7 +13,8 @@ JOIN yrkesco.Enrollment e ON co.offering_id = e.offering_id
 GROUP BY c.class_id, c.class_name
 ORDER BY pass_rate_percentage DESC;
 
--- Number of students who failed in a class,
+-- Question:
+-- Show number of students who failed in a class,
 -- which can help track students in need of intervention
 
 WITH ig_counts AS (
@@ -44,7 +46,8 @@ JOIN yrkesco.Class c ON ic.class_id = c.class_id
 GROUP BY c.class_id, c.class_name
 ORDER BY c.class_id;
 
--- Number of students that have passed all the courses in the class
+-- Question:
+-- Show number of students that have passed all the courses in the class
 -- so far
 
 SELECT 
@@ -66,7 +69,8 @@ FROM (
 GROUP BY s.class_id, s.class_name
 ORDER BY s.class_id;
 
--- Average grade in each class, which gives an overview of the overall performance.
+-- Question:
+-- Show average grade in each class, which gives an overview of the overall performance.
 
 SELECT 
     c.class_id,
@@ -87,9 +91,8 @@ JOIN yrkesco.Enrollment e ON co.offering_id = e.offering_id
 GROUP BY c.class_id, c.class_name
 ORDER BY avg_grade DESC;
 
-
--- Percentage of students 
--- who have completed (passed) a particular course.
+-- Question:
+-- Show percentage of students who have passed a particular course_offering
 
 SELECT 
     c.class_id,
@@ -109,7 +112,8 @@ WHERE e.grade != 'NOT SET'  -- Exclude rows where the grade is 'NOT SET'
 GROUP BY c.class_id, c.class_name, cr.course_name
 ORDER BY c.class_id, cr.course_name;
 
--- Pass Rate Percentage for Each Teacher’s Courses
+-- Question:
+-- Show pass Rate Percentage for Each Teacher’s Courses
 
 SELECT 
     c.class_id,
@@ -133,7 +137,8 @@ AND co.teacher_id = 1  -- Replace 123 with the actual teacher ID you want to fil
 GROUP BY c.class_id, c.class_name, cr.course_name, t.first_name, t.last_name
 ORDER BY c.class_id, cr.course_name;
 
-/* Compare teachers and calculate an average of their average passing rates
+/* Question:
+Compare teachers and calculate an average of their average passing rates
  across all their courses in two steps:
 - 1: calculate the pass rate for each course taught by each teacher.
 - 2: calculate the average of these individual course pass rates per teacher.*/
@@ -169,7 +174,8 @@ FROM teacher_course_pass_rate
 GROUP BY teacher_id, teacher_first_name, teacher_last_name
 ORDER BY average_pass_rate DESC;
 
--- Results for stand alone courses
+-- Question:
+-- Show results for stand alone courses
 
 SELECT 
     c.course_id, 
@@ -188,7 +194,6 @@ JOIN yrkesco.Person p ON s.person_id = p.person_id
 LEFT JOIN yrkesco.Class cl ON s.class_id = cl.class_id -- Students are assigned to classes
 WHERE co.linked_class_id IS NULL -- Filter for standalone courses only (no class linked)
 ORDER BY c.course_name, s.student_id;
-
 
 -- Question: 
 -- Who are the students at school who failed a course in this term?
