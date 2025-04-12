@@ -7,6 +7,7 @@ SELECT
     p.first_name, 
     p.last_name, 
     e.grade, 
+    e.grade_update,
     co.term, 
     co.year, 
     c2.course_name, 
@@ -17,9 +18,9 @@ JOIN yrkesco.Person p ON s.person_id = p.person_id  -- Get student names
 JOIN yrkesco.Course_offering co ON e.offering_id = co.offering_id
 JOIN yrkesco.Course c2 ON co.course_id = c2.course_id  -- Get course name
 JOIN yrkesco.Class c ON co.linked_class_id = c.class_id  -- Join to get class info
-WHERE co.teacher_id = 1  -- Specify teacher_id (replace with the teacher's ID)
+WHERE co.teacher_id = 3  -- Specify teacher_id (replace with the teacher's ID)
   AND co.term = 'VT'  -- You can replace 'VT' with any term input
-  AND co.year = 2024  -- Replace 2024 with the desired year input
+  AND co.year = 2025  -- Replace 2024 with the desired year input
 ORDER BY c2.course_name, grade ASC;
 
 -- Question:
