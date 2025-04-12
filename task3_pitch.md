@@ -1,0 +1,3 @@
+Click here to watch [Part 1](https://stise-my.sharepoint.com/:v:/r/personal/katrin_rylander_stud_sti_se/Documents/Part1_video_pitch_Rylander.webm?csf=1&web=1&e=YvI9yy&nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJTdHJlYW1XZWJBcHAiLCJyZWZlcnJhbFZpZXciOiJTaGFyZURpYWxvZy1MaW5rIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXcifX0%3D)
+
+Click here to watch [Part 2 - Demo](https://stise-my.sharepoint.com/:v:/r/personal/katrin_rylander_stud_sti_se/Documents/Part2_video_pitch_Rylander.webm?csf=1&web=1&e=vsM6Ld&nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJTdHJlYW1XZWJBcHAiLCJyZWZlcnJhbFZpZXciOiJTaGFyZURpYWxvZy1MaW5rIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXcifX0%3D)
